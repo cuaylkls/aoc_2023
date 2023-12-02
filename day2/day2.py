@@ -17,9 +17,6 @@ with open(path, 'r') as f:
         # get the game number based on location of :
         game_no = int(line[:line.find(':')].replace('Game ', ''))
 
-        # assume game is valid until we find otherwise
-        valid_game = True
-
         for game_round in line[line.find(':')+2:].split(';'):
             # create a dict to store the colours
             colours = {
