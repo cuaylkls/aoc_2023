@@ -1,3 +1,5 @@
+from functools import reduce
+
 path = 'input.txt'
 
 # test set, games where the number of cubes for that
@@ -10,6 +12,7 @@ test = {
 
 # create a variable to hold final result
 valid_games_sum = 0
+min_values_sum = 0
 
 with open(path, 'r') as f:
     # read each line in file
@@ -17,33 +20,37 @@ with open(path, 'r') as f:
         # get the game number based on location of :
         game_no = int(line[:line.find(':')].replace('Game ', ''))
 
+        # assume game is valid until we find otherwise
+        valid_game = True
+
+        # dict to store minimum values
+        min_values = {
+            'red': 0,
+            'green': 0,
+            'blue': 0,
+        }
+
         for game_round in line[line.find(':')+2:].split(';'):
-            # create a dict to store the colours
-            colours = {
-                'red': 0,
-                'green': 0,
-                'blue': 0,
-            }
-
             # set the colours
-            for colour in game_round.split(','):
-                colours[colour.strip().split()[1]] = int(colour.strip().split()[0])
+            for colour_spec in game_round.split(','):
+                # get each component and set the colour
+                colour = colour_spec.strip().split()[1]
+                value = int(colour_spec.strip().split()[0])
 
-            # check compare each colour to the test quantities
-            # stop checking if exceeded
-            for k in test.keys():
-                if colours[k] > test[k]:
-                    break
-            else:
-                # move to the next round if round is valid
-                continue
+                # record the maximum value compared to the last round
+                min_values[colour] = max(min_values[colour], value)
 
-            # we reach this line if we break out of the previous loop,
-            # that means we should break out of this one
-            break
-        else:
-            # all rounds passed the test, this is a valid game
+                # check compare each colour to the test quantities
+                # set a flag if game is invalid
+                if value > test[colour]:
+                    valid_game = False
+
+        # add the game number for valid games
+        if valid_game:
             valid_games_sum += game_no
 
+        # add the product of the minimum values to the final value
+        min_values_sum += reduce(lambda x, y: x * y, min_values.values())
 
-print (valid_games_sum)
+print(f"Part 1: {valid_games_sum}")
+print(f"Part 2: {min_values_sum}")
