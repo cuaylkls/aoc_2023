@@ -26,14 +26,7 @@ with open(path, 'r') as f:
         # create a list containing two sets, one set for the winning numbers and
         # one set for the card numbers
         lists: List[Set] = [
-            set(
-                # filter out any list items with null strings
-                filter(
-                    # function returns true when an item containing no digits
-                    # i.e. only spaces is found
-                    lambda c: c != '', no_list.strip().split(" ")
-                       )
-            ) for no_list in games.split(" | ")
+            set(no_list.strip().split()) for no_list in games.split(" | ")
         ]
 
         # find the intersection between winning numbers and
